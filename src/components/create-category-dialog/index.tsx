@@ -1,25 +1,24 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { theme } from '../../styles/theme';
+import { createCategorySchema } from '../../validators/schemas';
+import { CreateCategoryData } from '../../validators/types';
 import { Button } from '../button';
 import { Dialog } from '../dialog';
 import { Input } from '../input';
 import { Title } from '../title';
 import { Container } from './styles';
 
-type CreateCategoryData = {
-  title: string;
-  color: string;
-};
-
 export function CreateCategoryDialog() {
   const [open, setOpen] = useState(false);
-  const { register, handleSubmit } = useForm<CreateCategoryData>({
+  const { register, handleSubmit, formState } = useForm<CreateCategoryData>({
     defaultValues: {
       title: '',
       color: theme.colors.primary,
     },
+    resolver: zodResolver(createCategorySchema),
   });
 
   const handleClose = useCallback(() => {
@@ -52,8 +51,14 @@ export function CreateCategoryDialog() {
               label="Nome"
               placeholder="Nome da categoria..."
               {...register('title')}
+              error={formState.errors?.title?.message}
             />
-            <Input label="Cor" type="color" {...register('color')} />
+            <Input
+              label="Cor"
+              type="color"
+              {...register('color')}
+              error={formState.errors?.color?.message}
+            />
           </div>
           <footer>
             <Button onClick={handleClose} variant="outline" type="button">
