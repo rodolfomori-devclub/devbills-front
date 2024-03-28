@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { useFetchAPI } from '../../hooks/useFetchAPI';
 import { theme } from '../../styles/theme';
 import { createCategorySchema } from '../../validators/schemas';
 import { CreateCategoryData } from '../../validators/types';
@@ -12,6 +13,7 @@ import { Title } from '../title';
 import { Container } from './styles';
 
 export function CreateCategoryDialog() {
+  const { createCategory, fetchCategories } = useFetchAPI();
   const [open, setOpen] = useState(false);
   const { register, handleSubmit, formState } = useForm<CreateCategoryData>({
     defaultValues: {
@@ -26,11 +28,12 @@ export function CreateCategoryDialog() {
   }, []);
 
   const onSubmit = useCallback(
-    (data: CreateCategoryData) => {
-      console.log(data);
+    async (data: CreateCategoryData) => {
+      await createCategory(data);
       handleClose();
+      await fetchCategories();
     },
-    [handleClose],
+    [handleClose, createCategory, fetchCategories],
   );
 
   return (
